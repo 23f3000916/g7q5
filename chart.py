@@ -6,66 +6,59 @@ import numpy as np
 def generate_chart():
     """
     Generates and saves a professional Seaborn barplot visualizing
-    customer satisfaction scores across different product categories.
+    customer satisfaction scores across different product categories,
+    adhering to specific export dimensions and styling.
     """
-    # 1. Generate realistic synthetic data
-    # Create a dictionary with product categories and their average satisfaction scores.
-    # Scores are generated randomly to simulate real-world variance.
+    # 1. Generate realistic synthetic data for product performance insights
+    # A dictionary is created to hold the data, which is then loaded into a pandas DataFrame.
     data = {
         'Product Category': ['Electronics', 'Apparel', 'Home & Garden', 'Books & Media', 'Sporting Goods', 'Health & Beauty'],
-        'Average Satisfaction Score': [4.2 + np.random.randn()*0.1 for _ in range(6)],
+        'Average Satisfaction Score': [4.3, 3.6, 4.1, 4.6, 4.0, 4.4],
     }
-    # Add some variance to the scores
-    data['Average Satisfaction Score'][1] -= 0.5 # Lower score for Apparel
-    data['Average Satisfaction Score'][3] += 0.3 # Higher score for Books & Media
-
-    # Convert the dictionary to a pandas DataFrame, which is the standard
-    # format for working with data in Seaborn.
     df = pd.DataFrame(data)
+    # Sorting the data makes the chart easier to interpret.
     df = df.sort_values('Average Satisfaction Score', ascending=False)
 
-    # 2. Apply professional styling
-    # Set the overall style of the plot for a clean, professional look.
+    # 2. Apply professional styling using Seaborn best practices
+    # 'whitegrid' provides a clean, professional background.
     sns.set_style("whitegrid")
-    # Set the context to 'talk' to make fonts and lines thicker, suitable for presentations.
+    # 'talk' context increases font sizes for better readability in presentations.
     sns.set_context("talk")
 
-    # 3. Create the barplot using sns.catplot
-    # This is a high-level function for categorical plots. Using kind='bar' produces a barplot.
-    # It returns a FacetGrid object, which gives more flexibility for complex plots.
-    g = sns.catplot(
+    # 3. Create the barplot
+    # Set the figure size. An 8x8 inch figure with a DPI of 64 results in a 512x512 pixel image.
+    plt.figure(figsize=(8, 8))
+
+    # Create the barplot using sns.barplot() as specified.
+    # The 'viridis' palette is colorblind-friendly and professional.
+    barplot = sns.barplot(
         x='Average Satisfaction Score',
         y='Product Category',
         data=df,
-        kind='bar',
-        palette='viridis',
-        height=7, # Control figure size through height and aspect
-        aspect=1.1
+        palette='viridis'
     )
 
-    # 4. Customize the chart with titles and labels
-    # For catplot, we set titles and labels on the axes object (ax).
-    ax = g.ax
-    ax.set_title('Average Customer Satisfaction by Product Category', fontsize=18, weight='bold', pad=20)
-    ax.set_xlabel('Average Satisfaction Score (out of 5)', fontsize=14)
-    ax.set_ylabel('Product Category', fontsize=14)
+    # 4. Style the chart with appropriate titles, labels, and colors
+    plt.title('Average Customer Satisfaction by Product Category', fontsize=18, weight='bold', pad=20)
+    plt.xlabel('Average Satisfaction Score (out of 5)', fontsize=14)
+    plt.ylabel('Product Category', fontsize=14)
 
-    # Set x-axis limits to provide better context for the scores (e.g., from 0 to 5).
-    ax.set_xlim(0, 5)
+    # Set x-axis limits for better context (scores are out of 5).
+    plt.xlim(0, 5)
 
-    # Add data labels to each bar for precise readings
-    for p in ax.patches:
+    # Add data labels to each bar for clarity.
+    for p in barplot.patches:
         width = p.get_width()
-        ax.text(width + 0.05, p.get_y() + p.get_height() / 2.,
-                 f'{width:.2f}',
+        plt.text(width + 0.05, p.get_y() + p.get_height() / 2.,
+                 f'{width:.1f}',
                  va='center')
 
-    # 5. Export the chart
-    # Use plt.tight_layout() to ensure all elements fit within the figure without overlapping.
+    # 5. Export the chart to the specified dimensions
+    # Ensure all elements fit neatly within the saved figure.
     plt.tight_layout()
-    # Save the figure to a PNG file with the specified dimensions and resolution.
-    # A custom figsize and dpi are needed to hit the 512x512 target with catplot.
-    plt.savefig('chart.png', dpi=64) # 8-inch figure height from catplot * 64 dpi = 512px
+    # Save the figure. dpi=64 on an 8x8 figure creates a 512x512 pixel image.
+    # bbox_inches='tight' removes any excess whitespace.
+    plt.savefig('chart.png', dpi=64, bbox_inches='tight')
 
     print("Chart 'chart.png' (512x512) has been successfully generated.")
 
